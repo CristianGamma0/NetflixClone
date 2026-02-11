@@ -1,0 +1,53 @@
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Netflix Sans Font Faces */
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Th.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Rg.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Md.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Bd.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('/NetflixSans_W_Blk.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@layer components {
+  .sp{
+    @apply mr-[20px] cursor-pointer;
+  }
+}
