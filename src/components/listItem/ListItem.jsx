@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { getTMDBApiUrl } from "../../config/tmdb";
 
-export default function ListItem({ imageUrl, titleId, title, overview, rating, mediaType }) {
+export default function ListItem({ imageUrl, titleId, title, overview, rating, mediaType, releaseDate }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [trailerKey, setTrailerKey] = useState(null);
@@ -88,7 +88,7 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
               src={imageUrl} 
               alt={title || "Movie cover"}
             />
-            {rating && (
+            {rating > 0 && (
               <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-yellow-400 px-2 py-1 rounded text-xs font-semibold">
                 ⭐ {rating.toFixed(1)}
               </div>
@@ -99,6 +99,20 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
           {isExpanded && (
             <div className="p-4 text-white">
               <h3 className="text-lg font-semibold mb-2 line-clamp-2">{title}</h3>
+              
+              {/* Info: Anno e Rating */}
+              <div className="flex items-center gap-3 mb-3 text-sm">
+                {releaseDate && (
+                  <span className="text-gray-400">
+                    {new Date(releaseDate).getFullYear()}
+                  </span>
+                )}
+                {rating > 0 && (
+                  <span className="text-yellow-400 font-semibold">
+                    ⭐ {rating.toFixed(1)}
+                  </span>
+                )}
+              </div>
               
               {/* Play Button */}
               {trailerKey && (

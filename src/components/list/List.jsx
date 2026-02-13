@@ -24,6 +24,9 @@ export default function List({ msg, itemCount = 10, category = "popular" }) {
           case "upcoming":
             endpoint = "/movie/upcoming";
             break;
+          case "recent":
+            endpoint = "/movie/now_playing";
+            break;
           default:
             endpoint = "/movie/popular";
         }
@@ -34,15 +37,35 @@ export default function List({ msg, itemCount = 10, category = "popular" }) {
         
         if (data.results) {
           // Map TMDB results to our item format
-          const mappedItems = data.results.slice(0, itemCount).map(item => ({
+          const mappedItems = data.results.map(item => ({
             id: item.id,
             title: item.title || item.name,
             imageUrl: getTMDBImageUrl(item.backdrop_path || item.poster_path, 'w500'),
             posterUrl: getTMDBImageUrl(item.poster_path, 'w342'),
             overview: item.overview,
             rating: item.vote_average,
+            releaseDate: item.release_date || item.first_air_date,
             mediaType: item.media_type || (category === 'tv' ? 'tv' : 'movie')
-          })).filter(item => item.imageUrl);
+          })).filter(item => {
+            // Filtra elementi senza immagine
+            if (!item.imageUrl) return false;
+            
+            // Per upcoming, mostra solo contenuti non ancora usciti
+            if (category === 'upcoming' && item.releaseDate) {
+              return new Date(item.releaseDate) > new Date();
+            }
+            
+            // Per recent, mostra solo contenuti usciti nell'ultimo mese
+            if (category === 'recent' && item.releaseDate) {
+              const now = new Date();
+              const releaseDate = new Date(item.releaseDate);
+              const oneMonthAgo = new Date();
+              oneMonthAgo.setMonth(now.getMonth() - 1);
+              return releaseDate <= now && releaseDate >= oneMonthAgo;
+            }
+            
+            return true;
+          }).slice(0, itemCount);
           
           setItems(mappedItems);
         }
@@ -82,6 +105,7 @@ export default function List({ msg, itemCount = 10, category = "popular" }) {
                 overview={item.overview}
                 rating={item.rating}
                 mediaType={item.mediaType}
+                releaseDate={item.releaseDate}
               />
             ))
           )}

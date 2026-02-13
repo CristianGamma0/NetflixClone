@@ -16,7 +16,7 @@ const home = () => {
       <List msg="Film d'azione e avventura" itemCount={10} category="popular" />
       <List msg="Scelti per te oggi" itemCount={10} category="trending" />
       <List msg="Drammi TV acclamati dalla critica" itemCount={10} category="tv" />
-      <List msg="Nuovi e popolari" itemCount={10} category="upcoming" />
+      <List msg="Nuovi e popolari" itemCount={10} category="recent" />
     </div>
   );
 };
