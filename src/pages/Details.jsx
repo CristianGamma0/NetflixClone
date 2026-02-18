@@ -1,61 +1,17 @@
-import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getTMDBApiUrl, getTMDBImageUrl, TMDB_IMAGE_SIZES } from "../config/tmdb";
+import { getTMDBImageUrl, TMDB_IMAGE_SIZES } from "../config/tmdb";
+import { useMovieDetails, useMovieCredits, useMovieVideos } from "../hooks/useTMDBQueries";
 import Navbar from "../components/navbar/Navbar";
 
 export default function Details() {
   const { mediaType, id } = useParams();
   const navigate = useNavigate();
-  const [content, setContent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [cast, setCast] = useState([]);
-  const [videos, setVideos] = useState([]);
-
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        // Fetch main details
-        const detailsUrl = getTMDBApiUrl(`/${mediaType}/${id}`, { language: 'it-IT' });
-        const detailsResponse = await fetch(detailsUrl);
-        const detailsData = await detailsResponse.json();
-
-        // Fetch credits (cast)
-        const creditsUrl = getTMDBApiUrl(`/${mediaType}/${id}/credits`, { language: 'it-IT' });
-        const creditsResponse = await fetch(creditsUrl);
-        const creditsData = await creditsResponse.json();
-
-        // Fetch videos (trailers)
-        const videosUrl = getTMDBApiUrl(`/${mediaType}/${id}/videos`, { language: 'it-IT' });
-        const videosResponse = await fetch(videosUrl);
-        const videosData = await videosResponse.json();
-
-        setContent({
-          id: detailsData.id,
-          title: detailsData.title || detailsData.name,
-          overview: detailsData.overview,
-          backdropPath: detailsData.backdrop_path,
-          posterPath: detailsData.poster_path,
-          voteAverage: detailsData.vote_average,
-          releaseDate: detailsData.release_date || detailsData.first_air_date,
-          runtime: detailsData.runtime || detailsData.episode_run_time?.[0],
-          genres: detailsData.genres,
-          status: detailsData.status,
-          numberOfSeasons: detailsData.number_of_seasons,
-          numberOfEpisodes: detailsData.number_of_episodes,
-        });
-
-        setCast(creditsData.cast?.slice(0, 10) || []);
-        setVideos(videosData.results?.filter(v => v.type === "Trailer").slice(0, 1) || []);
-
-      } catch (error) {
-        console.error("Error fetching details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetails();
-  }, [mediaType, id]);
+  
+  const { data: content, isLoading: loadingDetails } = useMovieDetails(mediaType, id);
+  const { data: cast = [] } = useMovieCredits(mediaType, id);
+  const { data: videos = [] } = useMovieVideos(mediaType, id);
+  
+  const loading = loadingDetails;
 
   if (loading) {
     return (

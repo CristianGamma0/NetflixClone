@@ -1,83 +1,8 @@
-import { useState, useEffect } from "react";
 import ListItem from "../listItem/ListItem";
-import { getTMDBApiUrl, getTMDBImageUrl } from "../../config/tmdb";
+import { useMovieList } from "../../hooks/useTMDBQueries";
 
 export default function List({ msg, itemCount = 10, category = "popular" }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        // Determine which endpoint to use based on category
-        let endpoint;
-        switch(category) {
-          case "trending":
-            endpoint = "/trending/all/week";
-            break;
-          case "tv":
-            endpoint = "/tv/popular";
-            break;
-          case "topRated":
-            endpoint = "/movie/top_rated";
-            break;
-          case "upcoming":
-            endpoint = "/movie/upcoming";
-            break;
-          case "recent":
-            endpoint = "/movie/now_playing";
-            break;
-          default:
-            endpoint = "/movie/popular";
-        }
-
-        const url = getTMDBApiUrl(endpoint, { language: 'it-IT' });
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.results) {
-          // Map TMDB results to our item format
-          const mappedItems = data.results.map(item => ({
-            id: item.id,
-            title: item.title || item.name,
-            imageUrl: getTMDBImageUrl(item.backdrop_path || item.poster_path, 'w500'),
-            posterUrl: getTMDBImageUrl(item.poster_path, 'w342'),
-            overview: item.overview,
-            rating: item.vote_average,
-            releaseDate: item.release_date || item.first_air_date,
-            mediaType: item.media_type || (category === 'tv' ? 'tv' : 'movie')
-          })).filter(item => {
-            // Filtra elementi senza immagine
-            if (!item.imageUrl) return false;
-            
-            // Per upcoming, mostra solo contenuti non ancora usciti
-            if (category === 'upcoming' && item.releaseDate) {
-              return new Date(item.releaseDate) > new Date();
-            }
-            
-            // Per recent, mostra solo contenuti usciti nell'ultimo mese
-            if (category === 'recent' && item.releaseDate) {
-              const now = new Date();
-              const releaseDate = new Date(item.releaseDate);
-              const oneMonthAgo = new Date();
-              oneMonthAgo.setMonth(now.getMonth() - 1);
-              return releaseDate <= now && releaseDate >= oneMonthAgo;
-            }
-            
-            return true;
-          }).slice(0, itemCount);
-          
-          setItems(mappedItems);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, [itemCount, category]);
+  const { data: items = [], isLoading: loading } = useMovieList(category, itemCount);
 
   return (
     <div className="text-white my-[44.472px] min-h-[168.150px]">

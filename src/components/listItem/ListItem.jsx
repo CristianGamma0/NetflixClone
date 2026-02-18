@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
-import { getTMDBApiUrl } from "../../config/tmdb";
+import { useTrailer } from "../../hooks/useTMDBQueries";
 
 export default function ListItem({ imageUrl, titleId, title, overview, rating, mediaType, releaseDate }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [trailerKey, setTrailerKey] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const navigate = useNavigate();
+
+  // Fetch trailer solo quando l'elemento si espande
+  const { data: trailerKey } = useTrailer(mediaType, titleId, isExpanded);
 
   useEffect(() => {
     let timer;
     if (isHovered) {
       timer = setTimeout(() => {
         setIsExpanded(true);
-        // Fetch trailer quando l'elemento si espande
-        fetchTrailer();
       }, 1000);
     } else {
       setIsExpanded(false);
@@ -24,31 +24,6 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
 
     return () => clearTimeout(timer);
   }, [isHovered]);
-
-  const fetchTrailer = async () => {
-    try {
-      // Prova prima in italiano
-      let videosUrl = getTMDBApiUrl(`/${mediaType}/${titleId}/videos`, { language: 'it-IT' });
-      let videosResponse = await fetch(videosUrl);
-      let videosData = await videosResponse.json();
-      
-      let trailer = videosData.results?.find(v => v.type === "Trailer");
-      
-      // Se non c'è trailer in italiano, prova in inglese
-      if (!trailer) {
-        videosUrl = getTMDBApiUrl(`/${mediaType}/${titleId}/videos`, { language: 'en-US' });
-        videosResponse = await fetch(videosUrl);
-        videosData = await videosResponse.json();
-        trailer = videosData.results?.find(v => v.type === "Trailer");
-      }
-      
-      if (trailer) {
-        setTrailerKey(trailer.key);
-      }
-    } catch (error) {
-      console.error("Error fetching trailer:", error);
-    }
-  };
 
   const handlePlayClick = (e) => {
     e.preventDefault();
@@ -97,7 +72,7 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
 
           {/* Expanded Content */}
           {isExpanded && (
-            <div className="p-4 text-white">
+            <div className="p-4 text-white h-[231px] overflow-hidden flex flex-col">
               <h3 className="text-lg font-semibold mb-2 line-clamp-2">{title}</h3>
               
               {/* Info: Anno e Rating */}
@@ -134,7 +109,7 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
 
               {/* Overview */}
               {overview && (
-                <p className="text-sm text-gray-300 line-clamp-4 mb-3">
+                <p className="text-sm text-gray-300 line-clamp-3 mb-3 flex-shrink">
                   {overview}
                 </p>
               )}
@@ -145,7 +120,7 @@ export default function ListItem({ imageUrl, titleId, title, overview, rating, m
                   e.stopPropagation();
                   handleItemClick();
                 }}
-                className="text-sm text-gray-400 hover:text-white transition"
+                className="text-sm text-gray-400 hover:text-white transition mt-auto"
               >
                 Altre info →
               </button>
