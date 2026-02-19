@@ -1,17 +1,24 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getTMDBImageUrl, TMDB_IMAGE_SIZES } from "../config/tmdb";
 import { useMovieDetails, useMovieCredits, useMovieVideos } from "../hooks/useTMDBQueries";
+import { useAuth } from "../contexts/AuthContext";
 import Navbar from "../components/navbar/Navbar";
+import WatchlistButton from "../components/watchlist/WatchlistButton";
+import ReviewSection from "../components/reviews/ReviewSection";
 
 export default function Details() {
   const { mediaType, id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, currentProfile } = useAuth();
   
   const { data: content, isLoading: loadingDetails } = useMovieDetails(mediaType, id);
   const { data: cast = [] } = useMovieCredits(mediaType, id);
   const { data: videos = [] } = useMovieVideos(mediaType, id);
   
   const loading = loadingDetails;
+  
+  // Usa l'ID del profilo corrente
+  const currentProfileId = currentProfile?.id || null;
 
   if (loading) {
     return (
@@ -102,6 +109,25 @@ export default function Details() {
               </div>
             )}
 
+            {/* Watchlist Button - Solo se autenticato */}
+            {isAuthenticated && currentProfileId && (
+              <div className="mb-8">
+                <WatchlistButton
+                  profileId={currentProfileId}
+                  tmdbId={parseInt(id)}
+                  mediaType={mediaType}
+                  movieData={{
+                    title: content.title,
+                    posterPath: content.posterPath,
+                    backdropPath: content.backdropPath,
+                    overview: content.overview,
+                    voteAverage: content.voteAverage,
+                    releaseDate: content.releaseDate,
+                  }}
+                />
+              </div>
+            )}
+
             {/* Overview */}
             <p className="text-lg text-gray-300 leading-relaxed mb-8">
               {content.overview || "Nessuna descrizione disponibile."}
@@ -145,6 +171,21 @@ export default function Details() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Recensioni - Solo se autenticato */}
+            {isAuthenticated && currentProfileId && (
+              <div className="mt-12">
+                <ReviewSection
+                  profileId={currentProfileId}
+                  tmdbId={parseInt(id)}
+                  mediaType={mediaType}
+                  movieData={{
+                    title: content.title,
+                    posterPath: content.posterPath,
+                  }}
+                />
               </div>
             )}
           </div>

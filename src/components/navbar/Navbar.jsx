@@ -1,5 +1,7 @@
 import { ArrowDropDown, ArrowDropUp } from "@mui/icons-material";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";import { useNavigate } from "react-router-dom";import AuthModal from "../auth/AuthModal";
+import ProfileManagementModal from "../profiles/ProfileManagementModal";
 
 const NavbarLogo = () => {
   return (
@@ -8,13 +10,14 @@ const NavbarLogo = () => {
 };
 
 const NavbarLinks = () => {
+  const navigate = useNavigate();
   const links = [
-    { name: "Home", active: true },
-    { name: "Serie", active: false },
-    { name: "Film", active: false },
-    { name: "Giochi", active: false },
-    { name: "Nuovi e popolari", active: false },
-    { name: "La mia lista", active: false },
+    { name: "Home", active: true, path: "/" },
+    { name: "Serie", active: false, path: null },
+    { name: "Film", active: false, path: null },
+    { name: "Giochi", active: false, path: null },
+    { name: "Nuovi e popolari", active: false, path: null },
+    { name: "La mia lista", active: false, path: "/watchlist" },
   ];
 
   return (
@@ -22,9 +25,12 @@ const NavbarLinks = () => {
       {links.map((link) => (
         <span
           key={link.name}
+          onClick={() => link.path && navigate(link.path)}
           className={
             link.active
-              ? "sp font-medium text-white shadow-2xl shadow-white"
+              ? "sp font-medium text-white shadow-2xl shadow-white cursor-pointer"
+              : link.path
+              ? "sp cursor-pointer hover:text-gray-300"
               : "sp"
           }
         >
@@ -81,54 +87,24 @@ const NavbarNotifications = () => {
   );
 };
 
-const ProfilesList = () => {
-  const profiles = [
-    {
-      name: "Cleo",
-      icon: (
-        <img
-          className="rounded-[4px]"
-          src="https://occ-0-3901-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABTZ2zlLdBVC05fsd2YQAR43J6vB1NAUBOOrxt7oaFATxMhtdzlNZ846H3D8TZzooe2-FT853YVYs8p001KVFYopWi4D4NXM.png?r=229"
-        ></img>
-      ),
-    },
-    {
-      name: "Ale",
-      icon: (
-        <img
-          className="rounded-[4px]"
-          src="https://occ-0-3901-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABbgX5bikFO78GvuBmI5xN1mJOqv9OI65WXKq5f0suWLiRJucYqtWgTZrToyesA2K0SQHzT-P21LPrgLY1utk_a3dhRApJSA.png?r=989"
-        ></img>
-      ),
-    },
-    {
-      name: "Cris",
-      icon: (
-        <img
-          className="rounded-[4px]"
-          src="https://occ-0-3901-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABXYofKdCJceEP7pdxcEZ9wt80GsxEyXIbnG_QM8znksNz3JexvRbDLr0_AcNKr2SJtT-MLr1eCOA-e7xlDHsx4Jmmsi5HL8.png?r=1d4"
-        ></img>
-      ),
-    },
-    {
-      name: "Papà",
-      icon: (
-        <img
-          className="rounded-[4px]"
-          src="https://occ-0-3901-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABXMrBpySF8XZ8sCkWvT8aguR_wkRNG3R8T7iwBTsIkMyYwlB6it3SFUkQreUS4BP7yzuo542K7ZoPtOd13o6SbNT3mRrFQA.png?r=6a6"
-        ></img>
-      ),
-    },
-  ];
+const ProfilesList = ({ profiles, currentProfile, onSelectProfile }) => {
+  const defaultAvatar = "https://occ-0-4558-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABeuqjuQsRgqEDlibtJTI5BMf8IxhLlLOeIT6xI4TL57mqv7XHja43gx02S8pZVe8JNGRQXjnrUk1VcsTXqi83tFKPI6OR3k.png?r=bd7";
 
   return (
     <>
       {profiles.map((profile) => (
         <div
-          key={profile.name}
-          className="flex items-center w-[198.4px] h-[33.48px] py-[5px] px-[10px] box-content cursor-pointer"
+          key={profile.id}
+          onClick={() => onSelectProfile(profile)}
+          className={`flex items-center w-[198.4px] h-[33.48px] py-[5px] px-[10px] box-content cursor-pointer hover:bg-gray-800 ${
+            currentProfile?.id === profile.id ? 'bg-gray-700' : ''
+          }`}
         >
-          {profile.icon}
+          <img
+            className="rounded-[4px] w-[32px] h-[32px] object-cover"
+            src={profile.avatar_url || defaultAvatar}
+            alt={profile.name}
+          />
           <span className="ml-[10px]">{profile.name}</span>
         </div>
       ))}
@@ -136,7 +112,7 @@ const ProfilesList = () => {
   );
 };
 
-const SettingsList = () => {
+const SettingsList = ({ onManageProfiles }) => {
   const settings = [
     {
       name: "Gestisci i profili",
@@ -161,31 +137,7 @@ const SettingsList = () => {
           ></path>
         </svg>
       ),
-    },
-    {
-      name: "Trasferisci profilo",
-      icon: (
-        <svg
-          className="text-gray-400 w-[42px] h-[24px] ml-[-4px] mr-[-6px]"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          data-icon="ProfileArrowMedium"
-          data-icon-id=":rpo:"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          role="img"
-        >
-          <path
-            className="text-gray-400 w-[20px] h-[22.7px]"
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M6 1a4 4 0 0 0-4 4v12a4 4 0 0 0 4 4h3.59l-1.3 1.3 1.42 1.4 3-3a1 1 0 0 0 0-1.4l-3-3-1.42 1.4L9.6 19H6a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3v2h3a4 4 0 0 0 4-4V5a4 4 0 0 0-4-4zm1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M18 8.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-1.6 3.7a5 5 0 0 1-2.9.8 5 5 0 0 1-2.9-.8l-1.2 1.6a7 7 0 0 0 4.1 1.2c1.58 0 3.07-.43 4.1-1.2z"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-      ),
+      onClick: onManageProfiles,
     },
     {
       name: "Account",
@@ -211,6 +163,7 @@ const SettingsList = () => {
           ></path>
         </svg>
       ),
+      onClick: null,
     },
     {
       name: "Centro assistenza",
@@ -236,6 +189,7 @@ const SettingsList = () => {
           ></path>
         </svg>
       ),
+      onClick: null,
     },
   ];
 
@@ -244,7 +198,8 @@ const SettingsList = () => {
       {settings.map((setting) => (
         <div
           key={setting.name}
-          className="flex items-center w-[198.4px] h-[24px] py-[5px] px-[10px] box-content cursor-pointer"
+          onClick={setting.onClick}
+          className="flex items-center w-[198.4px] h-[24px] py-[5px] px-[10px] box-content cursor-pointer hover:bg-gray-800"
         >
           {setting.icon}
           <span className="ml-[10px]">{setting.name}</span>
@@ -254,33 +209,44 @@ const SettingsList = () => {
   );
 };
 
-const ExitButton = () => {
+const ExitButton = ({ onLogout }) => {
   return (
-    <div className="flex items-center justify-center w-[198.4px] h-[24px] py-[10px] px-[10px] box-content cursor-pointer border-t border-gray-800 mt-[2px]">Esci da Netflix</div>
+    <div 
+      onClick={onLogout}
+      className="flex items-center justify-center w-[198.4px] h-[24px] py-[10px] px-[10px] box-content cursor-pointer border-t border-gray-800 mt-[2px] hover:underline"
+    >
+      Esci da Netflix
+    </div>
   );
 };
 
-const ProfileMenuLinks = () => {
+const ProfileMenuLinks = ({ profiles, currentProfile, onSelectProfile, onManageProfiles, onLogout }) => {
   return (
     <>
       <div className="pt-[10px] pb-[5px]">
-        <ProfilesList />
+        <ProfilesList 
+          profiles={profiles} 
+          currentProfile={currentProfile}
+          onSelectProfile={onSelectProfile}
+        />
       </div>
       <div className=" pb-[10px]">
-        <SettingsList />
+        <SettingsList onManageProfiles={onManageProfiles} />
       </div>
     </>
   );
 };
 
-const NavbarProfile = ({ profileImage }) => {
+const NavbarProfile = ({ currentProfile, profiles, onSelectProfile, onManageProfiles, onLogout }) => {
+  const defaultAvatar = "https://occ-0-4558-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABeuqjuQsRgqEDlibtJTI5BMf8IxhLlLOeIT6xI4TL57mqv7XHja43gx02S8pZVe8JNGRQXjnrUk1VcsTXqi83tFKPI6OR3k.png?r=bd7";
+  
   return (
     <>
       <div className="group relative flex">
         <img
           className="h-[32px] w-[32px] rounded-[4px] mr-[0.5px] object-cover cursor-pointer"
-          src={profileImage}
-          alt="Profile"
+          src={currentProfile?.avatar_url || defaultAvatar}
+          alt={currentProfile?.name || 'Profile'}
         />
         <ArrowDropDown 
           className="mx-[3px] cursor-pointer mt-1 shadow-none group-hover:rotate-180" 
@@ -291,8 +257,14 @@ const NavbarProfile = ({ profileImage }) => {
           sx={{ fontSize: 31 }}
         />
         <div className="hidden text-[13px] bg-[var(--main-color)] border-[1px] border-gray-800 opacity-95 group-hover:flex flex-col absolute whitespace-nowrap right-3 top-[52px]">
-          <ProfileMenuLinks />
-          <ExitButton />
+          <ProfileMenuLinks 
+            profiles={profiles}
+            currentProfile={currentProfile}
+            onSelectProfile={onSelectProfile}
+            onManageProfiles={onManageProfiles}
+            onLogout={onLogout}
+          />
+          <ExitButton onLogout={onLogout} />
         </div>
       </div>
     </>
@@ -301,14 +273,15 @@ const NavbarProfile = ({ profileImage }) => {
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileManagement, setShowProfileManagement] = useState(false);
+  const { profiles, currentProfile, isAuthenticated, logout, selectProfile } = useAuth();
+  const navigate = useNavigate();
 
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
   };
-
-  const profileImage =
-    "https://occ-0-4558-784.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABeuqjuQsRgqEDlibtJTI5BMf8IxhLlLOeIT6xI4TL57mqv7XHja43gx02S8pZVe8JNGRQXjnrUk1VcsTXqi83tFKPI6OR3k.png?r=bd7";
 
   return (
     <div
@@ -323,12 +296,34 @@ const Navbar = () => {
           <NavbarLogo />
           <NavbarLinks />
         </div>
-        <div className="right flex items-center mr-[-11px]">
+        
+        <div className="right flex items-center gap-4">
           <NavbarSearch />
           <NavbarNotifications />
-          <NavbarProfile profileImage={profileImage} />
+          
+          {isAuthenticated ? (
+            <>
+              <NavbarProfile 
+                currentProfile={currentProfile}
+                profiles={profiles}
+                onSelectProfile={selectProfile}
+                onManageProfiles={() => setShowProfileManagement(true)}
+                onLogout={logout}
+              />
+            </>
+          ) : (
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="bg-red-600 text-white px-4 py-1.5 rounded text-sm font-semibold hover:bg-red-700 transition"
+            >
+              Accedi
+            </button>
+          )}
         </div>
       </div>
+      
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      {showProfileManagement && <ProfileManagementModal onClose={() => setShowProfileManagement(false)} />}
     </div>
   );
 };
