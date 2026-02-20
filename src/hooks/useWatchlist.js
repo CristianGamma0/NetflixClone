@@ -73,33 +73,9 @@ export const useRemoveFromWatchlist = () => {
       return await pb.collection('watchlist').delete(watchlistItemId);
     },
     onSuccess: () => {
+      // Invalida tutte le query relative alla watchlist
       queryClient.invalidateQueries({ queryKey: ['watchlist'] });
       queryClient.invalidateQueries({ queryKey: ['watchlist-check'] });
-    },
-  });
-};
-
-// Hook per toggle watchlist (aggiunge se non c'è, rimuove se c'è)
-export const useToggleWatchlist = () => {
-  const addMutation = useAddToWatchlist();
-  const removeMutation = useRemoveFromWatchlist();
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ profileId, tmdbId, mediaType, movieData, existingItem }) => {
-      if (existingItem) {
-        // Rimuovi
-        return await removeMutation.mutateAsync(existingItem.id);
-      } else {
-        // Aggiungi
-        return await addMutation.mutateAsync({ profileId, tmdbId, mediaType, movieData });
-      }
-    },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['watchlist', variables.profileId] });
-      queryClient.invalidateQueries({ 
-        queryKey: ['watchlist-check', variables.profileId, variables.tmdbId, variables.mediaType] 
-      });
     },
   });
 };

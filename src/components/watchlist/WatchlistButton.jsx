@@ -1,5 +1,5 @@
 import { Check, Plus } from 'lucide-react';
-import { useIsInWatchlist, useToggleWatchlist } from '../../hooks/useWatchlist';
+import { useIsInWatchlist, useAddToWatchlist, useRemoveFromWatchlist } from '../../hooks/useWatchlist';
 import { useState } from 'react';
 
 const WatchlistButton = ({ profileId, tmdbId, mediaType, movieData, className = '' }) => {
@@ -7,7 +7,8 @@ const WatchlistButton = ({ profileId, tmdbId, mediaType, movieData, className = 
   
   // Verifica se è nella watchlist
   const { data: existingItem, isLoading } = useIsInWatchlist(profileId, tmdbId, mediaType);
-  const toggleMutation = useToggleWatchlist();
+  const addMutation = useAddToWatchlist();
+  const removeMutation = useRemoveFromWatchlist();
 
   const isInWatchlist = !!existingItem;
 
@@ -16,13 +17,11 @@ const WatchlistButton = ({ profileId, tmdbId, mediaType, movieData, className = 
     
     setIsAdding(true);
     try {
-      await toggleMutation.mutateAsync({
-        profileId,
-        tmdbId,
-        mediaType,
-        movieData,
-        existingItem,
-      });
+      if (existingItem) {
+        await removeMutation.mutateAsync(existingItem.id);
+      } else {
+        await addMutation.mutateAsync({ profileId, tmdbId, mediaType, movieData });
+      }
     } catch (error) {
       console.error('Errore toggle watchlist:', error);
     } finally {

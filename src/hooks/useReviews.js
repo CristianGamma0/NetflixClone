@@ -93,6 +93,7 @@ export const useUpdateReview = () => {
       return await pb.collection('reviews').update(reviewId, data);
     },
     onSuccess: () => {
+      // Invalida tutte le query relative alle recensioni
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       queryClient.invalidateQueries({ queryKey: ['my-review'] });
       queryClient.invalidateQueries({ queryKey: ['profile-reviews'] });
@@ -108,6 +109,7 @@ export const useDeleteReview = () => {
       return await pb.collection('reviews').delete(reviewId);
     },
     onSuccess: () => {
+      // Invalida tutte le query relative alle recensioni
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       queryClient.invalidateQueries({ queryKey: ['my-review'] });
       queryClient.invalidateQueries({ queryKey: ['profile-reviews'] });
@@ -130,6 +132,7 @@ export const useToggleReviewLike = () => {
       }
     },
     onSuccess: () => {
+      // Invalida tutte le query relative ai like
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       queryClient.invalidateQueries({ queryKey: ['review-like'] });
       queryClient.invalidateQueries({ queryKey: ['review-likes-count'] });

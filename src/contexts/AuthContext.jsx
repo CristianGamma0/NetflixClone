@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(pb.authStore.model);
   const [profiles, setProfiles] = useState([]);
   const [currentProfile, setCurrentProfile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Carica profili quando l'utente è autenticato
   useEffect(() => {
@@ -158,7 +157,6 @@ export const AuthProvider = ({ children }) => {
     user,
     profiles,
     currentProfile,
-    isLoading,
     isAuthenticated: !!user,
     login,
     register,

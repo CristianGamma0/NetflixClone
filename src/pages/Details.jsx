@@ -9,18 +9,15 @@ import ReviewSection from "../components/reviews/ReviewSection";
 export default function Details() {
   const { mediaType, id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, currentProfile } = useAuth();
+  const { currentProfile } = useAuth();
   
   const { data: content, isLoading: loadingDetails } = useMovieDetails(mediaType, id);
   const { data: cast = [] } = useMovieCredits(mediaType, id);
   const { data: videos = [] } = useMovieVideos(mediaType, id);
   
-  const loading = loadingDetails;
-  
-  // Usa l'ID del profilo corrente
   const currentProfileId = currentProfile?.id || null;
 
-  if (loading) {
+  if (loadingDetails) {
     return (
       <div className="bg-[var(--main-color)] min-h-screen">
         <Navbar />
@@ -109,8 +106,8 @@ export default function Details() {
               </div>
             )}
 
-            {/* Watchlist Button - Solo se autenticato */}
-            {isAuthenticated && currentProfileId && (
+            {/* Watchlist Button */}
+            {currentProfileId && (
               <div className="mb-8">
                 <WatchlistButton
                   profileId={currentProfileId}
@@ -174,8 +171,8 @@ export default function Details() {
               </div>
             )}
 
-            {/* Recensioni - Solo se autenticato */}
-            {isAuthenticated && currentProfileId && (
+            {/* Recensioni */}
+            {currentProfileId && (
               <div className="mt-12">
                 <ReviewSection
                   profileId={currentProfileId}

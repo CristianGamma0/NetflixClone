@@ -15,16 +15,14 @@ const TitleWrapper = () => {
 
 const InfoWrapper = ({ overview }) => {
   return (
-    <>
-      <div className="w-[528.475px] h-[112.863px] text-white">
-        <div className="h-[28.450px] my-[14.824px] flex text-[23.7184px] font-medium items-center gap-3">
-          I più amati
-        </div>
-        <div className="text-[17.7888px] font-normal line-clamp-3">
-          {overview || "Nessuna descrizione disponibile."}
-        </div>
+    <div className="w-[528.475px] h-[112.863px] text-white">
+      <div className="h-[28.450px] my-[14.824px] flex text-[23.7184px] font-medium items-center gap-3">
+        I più amati
       </div>
-    </>
+      <div className="text-[17.7888px] font-normal line-clamp-3">
+        {overview || "Nessuna descrizione disponibile."}
+      </div>
+    </div>
   );
 };
 
@@ -138,9 +136,6 @@ export default function Featured() {
           
           if (trailer) {
             setTrailerKey(trailer.key);
-            console.log("Trailer found:", trailer.key);
-          } else {
-            console.log("No trailer found");
           }
           
           setFeaturedContent({
@@ -176,13 +171,9 @@ export default function Featured() {
   }
 
   const handlePlayClick = () => {
-    console.log("Play clicked, trailerKey:", trailerKey);
-    console.log("showTrailer before:", showTrailer);
     if (trailerKey) {
       setShowTrailer(true);
-      console.log("Setting showTrailer to true");
     } else {
-      console.log("No trailer key available");
       alert("Trailer non disponibile");
     }
   };

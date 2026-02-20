@@ -12,19 +12,4 @@ export const getAvatarUrl = (record, filename) => {
   return pb.files.getUrl(record, filename);
 };
 
-// Helper per ottenere l'utente corrente
-export const getCurrentUser = () => {
-  return pb.authStore.model;
-};
-
-// Helper per verificare se l'utente è autenticato
-export const isAuthenticated = () => {
-  return pb.authStore.isValid;
-};
-
-// Helper per logout
-export const logout = () => {
-  pb.authStore.clear();
-};
-
 export default pb;

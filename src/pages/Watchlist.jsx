@@ -4,21 +4,9 @@ import Navbar from '../components/navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
 
 const Watchlist = () => {
-  const { currentProfile, isAuthenticated } = useAuth();
+  const { currentProfile } = useAuth();
   const { data: watchlist, isLoading } = useWatchlist(currentProfile?.id);
   const navigate = useNavigate();
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-black">
-        <Navbar />
-        <div className="pt-32 px-12 text-center">
-          <h1 className="text-4xl text-white mb-4">Accedi per vedere la tua lista</h1>
-          <p className="text-gray-400">Devi effettuare l'accesso per visualizzare i contenuti salvati</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!currentProfile) {
     return (
