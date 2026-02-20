@@ -1,23 +1,30 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import pb from '../config/pocketbase';
 
-// Hook per ottenere le recensioni di un film/serie
-export const useReviews = (tmdbId, mediaType) => {
+export const useReviews = (tmdbId, mediaType, profileId = null) => {
   return useQuery({
-    queryKey: ['reviews', tmdbId, mediaType],
+    queryKey: ['reviews', tmdbId, mediaType, profileId],
     queryFn: async () => {
-      const records = await pb.collection('reviews').getFullList({
-        filter: `tmdb_id = ${tmdbId} && media_type = "${mediaType}" && is_public = true`,
-        sort: '-created',
-        expand: 'profile',
-      });
-      return records;
+      try {
+        // La listRule di PocketBase gestisce automaticamente la visibilità (pubbliche + proprie private)
+        const records = await pb.collection('reviews').getFullList({
+          expand: 'profile',
+        });
+        
+        const filtered = records.filter(r => 
+          r.tmdb_id === tmdbId && r.media_type === mediaType
+        );
+        
+        return filtered;
+      } catch (error) {
+        console.error('Errore recupero recensioni:', error);
+        return [];
+      }
     },
     enabled: !!tmdbId && !!mediaType,
   });
 };
 
-// Hook per ottenere la recensione di un profilo per un film/serie
 export const useMyReview = (profileId, tmdbId, mediaType) => {
   return useQuery({
     queryKey: ['my-review', profileId, tmdbId, mediaType],
@@ -35,14 +42,12 @@ export const useMyReview = (profileId, tmdbId, mediaType) => {
   });
 };
 
-// Hook per ottenere tutte le recensioni di un profilo
 export const useProfileReviews = (profileId) => {
   return useQuery({
     queryKey: ['profile-reviews', profileId],
     queryFn: async () => {
       const records = await pb.collection('reviews').getFullList({
         filter: `profile = "${profileId}"`,
-        sort: '-created',
       });
       return records;
     },
@@ -50,7 +55,6 @@ export const useProfileReviews = (profileId) => {
   });
 };
 
-// Hook per creare una recensione
 export const useCreateReview = () => {
   const queryClient = useQueryClient();
   
@@ -81,7 +85,6 @@ export const useCreateReview = () => {
   });
 };
 
-// Hook per aggiornare una recensione
 export const useUpdateReview = () => {
   const queryClient = useQueryClient();
   
@@ -97,7 +100,6 @@ export const useUpdateReview = () => {
   });
 };
 
-// Hook per eliminare una recensione
 export const useDeleteReview = () => {
   const queryClient = useQueryClient();
   
@@ -113,40 +115,28 @@ export const useDeleteReview = () => {
   });
 };
 
-// Hook per mettere/togliere like a una recensione
 export const useToggleReviewLike = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async ({ reviewId, profileId, isLiked, likeId }) => {
       if (isLiked && likeId) {
-        // Rimuovi like
         await pb.collection('review_likes').delete(likeId);
-        // Decrementa contatore
-        const review = await pb.collection('reviews').getOne(reviewId);
-        await pb.collection('reviews').update(reviewId, {
-          likes: Math.max(0, (review.likes || 0) - 1),
-        });
       } else {
-        // Aggiungi like
         await pb.collection('review_likes').create({
           review: reviewId,
           profile: profileId,
-        });
-        // Incrementa contatore
-        const review = await pb.collection('reviews').getOne(reviewId);
-        await pb.collection('reviews').update(reviewId, {
-          likes: (review.likes || 0) + 1,
         });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['review-like'] });
+      queryClient.invalidateQueries({ queryKey: ['review-likes-count'] });
     },
   });
 };
 
-// Hook per verificare se hai messo like a una recensione
 export const useIsReviewLiked = (reviewId, profileId) => {
   return useQuery({
     queryKey: ['review-like', reviewId, profileId],
@@ -161,5 +151,22 @@ export const useIsReviewLiked = (reviewId, profileId) => {
       }
     },
     enabled: !!reviewId && !!profileId,
+  });
+};
+
+export const useReviewLikesCount = (reviewId) => {
+  return useQuery({
+    queryKey: ['review-likes-count', reviewId],
+    queryFn: async () => {
+      try {
+        const records = await pb.collection('review_likes').getFullList({
+          filter: `review = "${reviewId}"`,
+        });
+        return records.length;
+      } catch {
+        return 0;
+      }
+    },
+    enabled: !!reviewId,
   });
 };
