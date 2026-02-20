@@ -9,7 +9,7 @@ pb.autoCancellation(false);
 // Helper per ottenere l'URL dell'avatar
 export const getAvatarUrl = (record, filename) => {
   if (!record || !filename) return null;
-  return pb.files.getUrl(record, filename);
+  return pb.files.getURL(record, filename);
 };
 
 export default pb;

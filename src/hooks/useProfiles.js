@@ -8,11 +8,11 @@ export const useProfiles = () => {
     queryFn: async () => {
       const records = await pb.collection('profiles').getFullList({
         sort: '-is_default,-created',
-        filter: `user = "${pb.authStore.model?.id}"`,
+        filter: `user = "${pb.authStore.record?.id}"`,
       });
       return records;
     },
-    enabled: !!pb.authStore.model,
+    enabled: !!pb.authStore.record,
   });
 };
 
@@ -24,7 +24,7 @@ export const useCreateProfile = () => {
     mutationFn: async (data) => {
       const profileData = {
         ...data,
-        user: pb.authStore.model.id,
+        user: pb.authStore.record.id,
       };
       return await pb.collection('profiles').create(profileData);
     },
