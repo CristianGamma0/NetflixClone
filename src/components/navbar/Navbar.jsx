@@ -172,6 +172,45 @@ const Navbar = () => {
                     </svg>
                     <span className="ml-[10px]">Gestisci i profili</span>
                   </div>
+                  
+                  <div className="flex items-center w-[198.4px] h-[24px] py-[5px] px-[10px] box-content cursor-pointer hover:bg-gray-800">
+                    <svg
+                      className="text-gray-400 w-[42px] h-[24px] ml-[-4px] mr-[-6px]"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                    >
+                      <path fillRule="evenodd" d="M6 1a4 4 0 0 0-4 4v12a4 4 0 0 0 4 4h3.59l-1.3 1.3 1.42 1.4 3-3a1 1 0 0 0 0-1.4l-3-3-1.42 1.4L9.6 19H6a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3v2h3a4 4 0 0 0 4-4V5a4 4 0 0 0-4-4zm1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M18 8.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-1.6 3.7a5 5 0 0 1-2.9.8 5 5 0 0 1-2.9-.8l-1.2 1.6a7 7 0 0 0 4.1 1.2c1.58 0 3.07-.43 4.1-1.2z" clipRule="evenodd" />
+                    </svg>
+                    <span className="ml-[10px]">Trasferisci profilo</span>
+                  </div>
+                  
+                  <div className="flex items-center w-[198.4px] h-[24px] py-[5px] px-[10px] box-content cursor-pointer hover:bg-gray-800">
+                    <svg
+                      className="text-gray-400 w-[42px] h-[24px] ml-[-4px] mr-[-6px]"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                    >
+                      <path fillRule="evenodd" d="M15 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m2 0A5 5 0 1 1 7 5a5 5 0 0 1 10 0M4 21a8 8 0 1 1 16 0v.514A68 68 0 0 1 12 22a68 68 0 0 1-8-.486zm17.15 2.378-.15-.99.151.99a1 1 0 0 0 .849-.99V21c0-5.523-4.477-10-10-10S2 15.477 2 21v1.389a1 1 0 0 0 .849.988L3 22.39c-.151.988-.15.988-.15.989h.003l.01.002.038.005.142.02q.186.027.535.072A70 70 0 0 0 12 24a70 70 0 0 0 8.422-.523q.35-.045.535-.072l.142-.02.038-.005.01-.002z" clipRule="evenodd" />
+                    </svg>
+                    <span className="ml-[10px]">Account</span>
+                  </div>
+                  
+                  <div className="flex items-center w-[198.4px] h-[24px] py-[5px] px-[10px] box-content cursor-pointer hover:bg-gray-800">
+                    <svg
+                      className="text-gray-400 w-[42px] h-[24px] ml-[-4px] mr-[-6px]"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      fill="currentColor"
+                    >
+                      <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0m0 8c-1.317 0-2 .743-2 1.5H8C8 7.257 10.003 6 12 6s4 1.257 4 3.5c0 1.349-1.08 2.268-2.178 2.68-.265.1-.49.25-.636.411-.14.156-.186.292-.186.409v1h-2v-1c0-1.435 1.168-2.335 2.119-2.692.729-.274.881-.66.881-.808 0-.757-.683-1.5-2-1.5m1.5 8.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" clipRule="evenodd" />
+                    </svg>
+                    <span className="ml-[10px]">Centro assistenza</span>
+                  </div>
                 </div>
                 
                 {/* Logout */}
