@@ -6,11 +6,12 @@ export const useProfiles = () => {
   return useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
-      const records = await pb.collection('profiles').getFullList({
-        sort: '-is_default,-created',
-        filter: `user = "${pb.authStore.record?.id}"`,
+      const records = await pb.collection('profiles').getFullList();
+      return records.sort((a, b) => {
+        if (a.is_default && !b.is_default) return -1;
+        if (!a.is_default && b.is_default) return 1;
+        return new Date(b.created) - new Date(a.created);
       });
-      return records;
     },
     enabled: !!pb.authStore.record,
   });

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useProfiles } from '../../hooks/useProfiles';
 
 const ProfileSetup = () => {
-  const { user, profiles, createProfile } = useAuth();
+  const { user, createProfile } = useAuth(); 
+  const { data: profiles, isLoading: loadingProfiles } = useProfiles();
   const navigate = useNavigate();
   const [selectedAvatar, setSelectedAvatar] = useState('');
   const [profileName, setProfileName] = useState(user?.name || '');
@@ -15,10 +17,10 @@ const ProfileSetup = () => {
   useEffect(() => {
     if (!user) {
       navigate('/');
-    } else if (profiles.length > 0) {
+    } else if (!loadingProfiles && profiles && profiles.length > 0) {
       navigate('/');
     }
-  }, [user, profiles, navigate]);
+  }, [user, profiles, loadingProfiles, navigate]);
 
   // Avatar disponibili
   const avatarOptions = [
@@ -56,6 +58,18 @@ const ProfileSetup = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Mostra un loading mentre verifica i profili esistenti
+  if (loadingProfiles) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-red-600 mx-auto"></div>
+          <p className="text-white text-xl mt-4">Caricamento...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
